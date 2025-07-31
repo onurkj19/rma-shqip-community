@@ -3,6 +3,12 @@ import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { CreatePost } from "@/components/CreatePost";
 import { PostCard } from "@/components/PostCard";
+import { TrendingPosts } from "@/components/TrendingPosts";
+import { MembersList } from "@/components/MembersList";
+import { EventsList } from "@/components/EventsList";
+import { MatchSchedule } from "@/components/MatchSchedule";
+import { UserProfile } from "@/components/UserProfile";
+import { SettingsPage } from "@/components/SettingsPage";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import heroImage from "@/assets/hero-banner.jpg";
@@ -140,20 +146,48 @@ const Index = () => {
             </div>
           </div>
         );
+      case "trending":
+        return (
+          <TrendingPosts
+            onLike={handleLike}
+            onComment={handleComment}
+            onShare={handleShare}
+            onReport={handleReport}
+          />
+        );
+      case "members":
+        return <MembersList />;
+      case "events":
+        return <EventsList />;
+      case "matches":
+        return <MatchSchedule />;
+      case "profile":
+        return (
+          <UserProfile
+            user={mockUser}
+            onLike={handleLike}
+            onComment={handleComment}
+            onShare={handleShare}
+            onReport={handleReport}
+          />
+        );
+      case "settings":
+        return <SettingsPage />;
+      case "admin":
+        return (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Panel i Administratorit</h2>
+              <p className="text-muted-foreground">Funksionaliteti i admin panel do të jetë i disponueshëm pasi të aktivizohet Supabase për autentifikim dhe databazë.</p>
+            </div>
+          </div>
+        );
       default:
         return (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">
-                {activeSection === "trending" && "Postimet në Tendencë"}
-                {activeSection === "members" && "Anëtarët e Komunitetit"}
-                {activeSection === "events" && "Ngjarjet e Ardhshme"}
-                {activeSection === "matches" && "Ndeshjet e Real Madrid"}
-                {activeSection === "profile" && "Profili Im"}
-                {activeSection === "settings" && "Cilësimet"}
-                {activeSection === "admin" && "Panel i Administratorit"}
-              </h2>
-              <p className="text-muted-foreground">Së shpejti...</p>
+              <h2 className="text-2xl font-bold mb-4">Seksion i panjohur</h2>
+              <p className="text-muted-foreground">Kjo faqe nuk ekziston.</p>
             </div>
           </div>
         );
