@@ -61,7 +61,26 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				'madrid-white': 'hsl(var(--madrid-white))',
+				'madrid-gold': 'hsl(var(--madrid-gold))',
+				'madrid-gold-dark': 'hsl(var(--madrid-gold-dark))',
+				'madrid-blue': 'hsl(var(--madrid-blue))',
+				'madrid-purple': 'hsl(var(--madrid-purple))',
+				'madrid-navy': 'hsl(var(--madrid-navy))'
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-gold': 'var(--gradient-gold)',
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-surface': 'var(--gradient-surface)'
+			},
+			boxShadow: {
+				'gold': 'var(--shadow-gold)',
+				'primary': 'var(--shadow-primary)'
+			},
+			transitionProperty: {
+				'smooth': 'var(--transition-smooth)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
