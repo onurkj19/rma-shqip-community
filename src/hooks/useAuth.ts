@@ -10,6 +10,12 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Early return if Supabase is not configured
+    if (!supabase) {
+      console.warn('Supabase not configured. Authentication features will be disabled.');
+      setLoading(false);
+      return;
+    }
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -95,6 +101,15 @@ export const useAuth = () => {
   };
 
   const signInWithGoogle = async () => {
+    if (!supabase) {
+      toast({
+        variant: "destructive",
+        title: "Gabim",
+        description: "Supabase nuk është konfiguruar. Ju lutem kontaktoni administratorin."
+      });
+      return;
+    }
+    
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -113,6 +128,15 @@ export const useAuth = () => {
   };
 
   const signInWithFacebook = async () => {
+    if (!supabase) {
+      toast({
+        variant: "destructive",
+        title: "Gabim", 
+        description: "Supabase nuk është konfiguruar. Ju lutem kontaktoni administratorin."
+      });
+      return;
+    }
+    
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
@@ -131,6 +155,15 @@ export const useAuth = () => {
   };
 
   const signInWithEmail = async (email: string, password: string) => {
+    if (!supabase) {
+      toast({
+        variant: "destructive",
+        title: "Gabim",
+        description: "Supabase nuk është konfiguruar. Ju lutem kontaktoni administratorin."
+      });
+      return;
+    }
+    
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -152,6 +185,15 @@ export const useAuth = () => {
   };
 
   const signUpWithEmail = async (email: string, password: string, fullName: string) => {
+    if (!supabase) {
+      toast({
+        variant: "destructive", 
+        title: "Gabim",
+        description: "Supabase nuk është konfiguruar. Ju lutem kontaktoni administratorin."
+      });
+      return;
+    }
+    
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -178,6 +220,8 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
+    if (!supabase) return;
+    
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;

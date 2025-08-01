@@ -20,6 +20,16 @@ export const AdminPanel = () => {
   }, []);
 
   const fetchUsers = async () => {
+    if (!supabase) {
+      toast({
+        variant: "destructive",
+        title: "Gabim",
+        description: "Supabase nuk është konfiguruar"
+      });
+      setLoading(false);
+      return;
+    }
+    
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -41,6 +51,8 @@ export const AdminPanel = () => {
   };
 
   const banUser = async (userId: string, shouldBan: boolean) => {
+    if (!supabase) return;
+    
     try {
       const { error } = await supabase
         .from('user_profiles')
@@ -68,6 +80,8 @@ export const AdminPanel = () => {
   };
 
   const changeUserRole = async (userId: string, newRole: UserRole) => {
+    if (!supabase) return;
+    
     try {
       const { error } = await supabase
         .from('user_profiles')
