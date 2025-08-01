@@ -6,11 +6,14 @@ interface HeaderProps {
   user?: {
     name: string;
     avatar?: string;
+    username?: string;
+    isAdmin?: boolean;
   };
   onMenuClick: () => void;
+  onAuthClick?: () => void;
 }
 
-export const Header = ({ user, onMenuClick }: HeaderProps) => {
+export const Header = ({ user, onMenuClick, onAuthClick }: HeaderProps) => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center px-4">
@@ -57,10 +60,10 @@ export const Header = ({ user, onMenuClick }: HeaderProps) => {
             </Avatar>
           ) : (
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={onAuthClick}>
                 Hyr
               </Button>
-              <Button variant="gold" size="sm">
+              <Button variant="gold" size="sm" onClick={onAuthClick}>
                 Regjistrohu
               </Button>
             </div>

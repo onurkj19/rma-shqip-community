@@ -9,6 +9,9 @@ import { EventsList } from "@/components/EventsList";
 import { MatchSchedule } from "@/components/MatchSchedule";
 import { UserProfile } from "@/components/UserProfile";
 import { SettingsPage } from "@/components/SettingsPage";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { AdminPanel } from "@/components/admin/AdminPanel";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import heroImage from "@/assets/hero-banner.jpg";
@@ -68,9 +71,11 @@ const mockPosts = [
 ];
 
 const Index = () => {
+  const { user, userProfile, loading, signOut } = useAuth();
   const [activeSection, setActiveSection] = useState("home");
   const [posts, setPosts] = useState(mockPosts);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const handleCreatePost = (content: string, media?: File) => {
     const newPost = {
@@ -174,14 +179,7 @@ const Index = () => {
       case "settings":
         return <SettingsPage />;
       case "admin":
-        return (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">Panel i Administratorit</h2>
-              <p className="text-muted-foreground">Funksionaliteti i admin panel do të jetë i disponueshëm pasi të aktivizohet Supabase për autentifikim dhe databazë.</p>
-            </div>
-          </div>
-        );
+        return <AdminPanel />;
       default:
         return (
           <div className="flex items-center justify-center h-full">
@@ -194,17 +192,42 @@ const Index = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-surface flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p>Duke ngarkuar...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-surface">
-      <Header user={mockUser} onMenuClick={() => setMobileMenuOpen(true)} />
+      <Header 
+        user={userProfile ? {
+          name: userProfile.full_name || userProfile.email,
+          avatar: userProfile.avatar_url || "/placeholder.svg",
+          username: userProfile.email.split('@')[0],
+          isAdmin: userProfile.role === 'admin'
+        } : null} 
+        onMenuClick={() => setMobileMenuOpen(true)}
+        onAuthClick={() => setAuthModalOpen(true)}
+      />
       
       <div className="flex">
         {/* Desktop Sidebar */}
         <div className="hidden md:block">
           <Sidebar
-            user={mockUser}
+        user={userProfile ? {
+          name: userProfile.full_name || userProfile.email,
+          avatar: userProfile.avatar_url || "/placeholder.svg",
+          isAdmin: userProfile.role === 'admin'
+        } : null}
             activeSection={activeSection}
             onSectionChange={setActiveSection}
+            onLogout={signOut}
           />
         </div>
 
@@ -212,12 +235,17 @@ const Index = () => {
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetContent side="left" className="p-0 w-64">
             <Sidebar
-              user={mockUser}
+            user={userProfile ? {
+              name: userProfile.full_name || userProfile.email,
+              avatar: userProfile.avatar_url || "/placeholder.svg",
+              isAdmin: userProfile.role === 'admin'
+            } : null}
               activeSection={activeSection}
               onSectionChange={(section) => {
                 setActiveSection(section);
                 setMobileMenuOpen(false);
               }}
+              onLogout={signOut}
             />
           </SheetContent>
         </Sheet>
@@ -227,6 +255,8 @@ const Index = () => {
           {renderContent()}
         </main>
       </div>
+
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>
   );
 };

@@ -17,6 +17,7 @@ interface SidebarProps {
   user?: {
     name: string;
     avatar?: string;
+    username?: string;
     isAdmin?: boolean;
   };
   activeSection: string;
