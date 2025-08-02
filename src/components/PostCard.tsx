@@ -37,6 +37,10 @@ interface PostCardProps {
 
 export const PostCard = ({ post, onLike, onComment, onShare, onReport }: PostCardProps) => {
   const [showComments, setShowComments] = useState(false);
+  
+  // Kontrollo localStorage për avatar të ruajtur
+  const savedAvatar = localStorage.getItem('user-avatar');
+  const displayAvatar = savedAvatar || post.author.avatar;
 
   return (
     <Card className="w-full max-w-2xl mx-auto mb-4 border-0 shadow-md hover:shadow-lg transition-all duration-300">
@@ -44,7 +48,7 @@ export const PostCard = ({ post, onLike, onComment, onShare, onReport }: PostCar
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={post.author.avatar} />
+              <AvatarImage src={displayAvatar} />
               <AvatarFallback className="bg-gradient-primary text-white">
                 {post.author.name.charAt(0)}
               </AvatarFallback>
@@ -133,6 +137,7 @@ export const PostCard = ({ post, onLike, onComment, onShare, onReport }: PostCar
           <div className="mt-4 pt-4 border-t">
             <div className="flex space-x-3">
               <Avatar className="h-8 w-8">
+                <AvatarImage src={displayAvatar} />
                 <AvatarFallback className="bg-gradient-primary text-white text-xs">
                   Ti
                 </AvatarFallback>

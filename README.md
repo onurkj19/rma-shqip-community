@@ -1,73 +1,92 @@
-# Welcome to your Lovable project
+# RMA Shqip Community
 
-## Project info
+## Rreth Projektit
 
-**URL**: https://lovable.dev/projects/b71f33f0-ced4-4eba-a3f7-5d793f92e3aa
+RMA Shqip është një platformë komuniteti për dashamirësit shqiptarë të Real Madrid. Ky projekt ofron një hapësirë për përdoruesit për të ndarë mendimet, të shohin ndeshjet, të marrin pjesë në ngjarje dhe të lidhen me anëtarët e tjerë të komunitetit.
 
-## How can I edit this code?
+## Teknologjitë e Përdorura
 
-There are several ways of editing your application.
+Ky projekt është ndërtuar me:
 
-**Use Lovable**
+- **Vite** - Build tool i shpejtë
+- **TypeScript** - Tipizim statik për JavaScript
+- **React** - Library për ndërtimin e UI
+- **shadcn/ui** - Komponentë të gatshëm dhe të bukur
+- **Tailwind CSS** - Framework CSS utility-first
+- **Supabase** - Backend-as-a-Service për autentifikim dhe bazë të dhënash
+- **React Router** - Routing për aplikacionin
+- **React Query** - Menaxhimi i gjendjes dhe cache
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b71f33f0-ced4-4eba-a3f7-5d793f92e3aa) and start prompting.
+## Si të Instaloni dhe Ekzekutoni
 
-Changes made via Lovable will be committed automatically to this repo.
+### Kërkesat
+- Node.js (version 18 ose më i ri)
+- npm ose yarn
 
-**Use your preferred IDE**
+### Hapat e Instalimit
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# Hapi 1: Klononi repository-n
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Hapi 2: Navigoni në direktorinë e projektit
+cd rma-shqip-community
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Hapi 3: Instaloni varësitë e nevojshme
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Hapi 4: Ekzekutoni serverin e zhvillimit
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Aplikacioni do të hapet në `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Funksionalitetet
 
-**Use GitHub Codespaces**
+- **Autentifikim**: Regjistrim dhe hyrje përmes Supabase
+- **Postime**: Krijimi dhe ndarja e postimeve
+- **Profil**: Menaxhimi i profilit të përdoruesit
+- **Anëtarët**: Lista e anëtarëve të komunitetit
+- **Ngjarjet**: Menaxhimi i ngjarjeve të komunitetit
+- **Ndeshjet**: Orari i ndeshjeve të Real Madrid
+- **Trending**: Postimet më të njohura
+- **Admin Panel**: Menaxhimi i komunitetit (për administratorët)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Struktura e Projektit
 
-## What technologies are used for this project?
+```
+src/
+├── components/     # Komponentët e UI
+├── pages/         # Faqet e aplikacionit
+├── hooks/         # Custom React hooks
+├── lib/           # Utilities dhe konfigurime
+└── assets/        # Imazhe dhe resurse statike
+```
 
-This project is built with:
+## Si të Kontribuoni
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Fork repository-n
+2. Krijoni një branch të ri (`git checkout -b feature/amazing-feature`)
+3. Commit ndryshimet tuaja (`git commit -m 'Add some amazing feature'`)
+4. Push në branch (`git push origin feature/amazing-feature`)
+5. Hapni një Pull Request
 
-## How can I deploy this project?
+## Deploy
 
-Simply open [Lovable](https://lovable.dev/projects/b71f33f0-ced4-4eba-a3f7-5d793f92e3aa) and click on Share -> Publish.
+Për të deployuar projektin:
 
-## Can I connect a custom domain to my Lovable project?
+```bash
+# Build për produksion
+npm run build
 
-Yes, you can!
+# Preview build-in
+npm run preview
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Kontakti
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Për pyetje ose sugjerime, ju lutemi të hapni një issue në repository.
+
+---
+
+**Hala Madrid y nada más!** ⚽🤍

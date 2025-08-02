@@ -13,7 +13,8 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { AdminPanel } from "@/components/admin/AdminPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+
 import heroImage from "@/assets/hero-banner.jpg";
 
 // Mock data for demonstration
@@ -174,6 +175,12 @@ const Index = () => {
             onComment={handleComment}
             onShare={handleShare}
             onReport={handleReport}
+            onAuthRequired={() => {
+              console.log('Auth required, setting modal to open');
+              console.log('Current authModalOpen state:', authModalOpen);
+              setAuthModalOpen(true);
+              console.log('Auth modal state set to true');
+            }}
           />
         );
       case "settings":
@@ -216,45 +223,122 @@ const Index = () => {
         onAuthClick={() => setAuthModalOpen(true)}
       />
       
-      <div className="flex">
+      {/* Mobile Layout - Dynamic content based on activeSection */}
+      <div className="block lg:hidden">
+        {renderContent()}
+      </div>
+
+      {/* Desktop Layout - With sidebar and sections */}
+      <div className="hidden lg:flex">
         {/* Desktop Sidebar */}
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <Sidebar
-        user={userProfile ? {
-          name: userProfile.full_name || userProfile.email,
-          avatar: userProfile.avatar_url || "/placeholder.svg",
-          isAdmin: userProfile.role === 'admin'
-        } : null}
+            user={userProfile ? {
+              name: userProfile.full_name || userProfile.email,
+              avatar: userProfile.avatar_url || "/placeholder.svg",
+              isAdmin: userProfile.role === 'admin'
+            } : null}
             activeSection={activeSection}
             onSectionChange={setActiveSection}
             onLogout={signOut}
           />
         </div>
 
-        {/* Mobile Sidebar */}
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetContent side="left" className="p-0 w-64">
-            <Sidebar
-            user={userProfile ? {
-              name: userProfile.full_name || userProfile.email,
-              avatar: userProfile.avatar_url || "/placeholder.svg",
-              isAdmin: userProfile.role === 'admin'
-            } : null}
-              activeSection={activeSection}
-              onSectionChange={(section) => {
-                setActiveSection(section);
-                setMobileMenuOpen(false);
-              }}
-              onLogout={signOut}
-            />
-          </SheetContent>
-        </Sheet>
-
         {/* Main Content */}
-        <main className="flex-1 min-h-screen">
+        <main className="flex-1 min-h-screen w-full">
           {renderContent()}
         </main>
       </div>
+
+      {/* Mobile Sidebar - Fixed overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Overlay */}
+          <div 
+            className="fixed inset-0 bg-black/50"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          {/* Sidebar */}
+          <div className="fixed left-0 top-0 h-full w-72 bg-background shadow-lg border-r">
+            <div className="p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-bold">Menu</h2>
+                <button 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 hover:bg-accent rounded"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="space-y-2">
+                <button 
+                  className="w-full text-left p-3 hover:bg-accent rounded font-medium"
+                  onClick={() => {
+                    setActiveSection('home');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  🏠 Ballina
+                </button>
+                <button 
+                  className="w-full text-left p-3 hover:bg-accent rounded font-medium"
+                  onClick={() => {
+                    setActiveSection('trending');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  📈 Tendenca
+                </button>
+                <button 
+                  className="w-full text-left p-3 hover:bg-accent rounded font-medium"
+                  onClick={() => {
+                    setActiveSection('members');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  👥 Anëtarët
+                </button>
+                <button 
+                  className="w-full text-left p-3 hover:bg-accent rounded font-medium"
+                  onClick={() => {
+                    setActiveSection('events');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  📅 Ngjarjet
+                </button>
+                <button 
+                  className="w-full text-left p-3 hover:bg-accent rounded font-medium"
+                  onClick={() => {
+                    setActiveSection('matches');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  ⚽ Ndeshjet
+                </button>
+                <button 
+                  className="w-full text-left p-3 hover:bg-accent rounded font-medium"
+                  onClick={() => {
+                    setActiveSection('profile');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  👤 Profili Im
+                </button>
+                <button 
+                  className="w-full text-left p-3 hover:bg-accent rounded font-medium"
+                  onClick={() => {
+                    setActiveSection('settings');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  ⚙️ Cilësimet
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     </div>

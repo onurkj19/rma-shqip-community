@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { 
   Home, 
   TrendingUp, 
@@ -23,89 +22,85 @@ interface SidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
   onLogout?: () => void;
+  mobile?: boolean; // If true, render for mobile/hamburger menu
 }
 
-export const Sidebar = ({ user, activeSection, onSectionChange, onLogout }: SidebarProps) => {
+export const Sidebar = ({ user, activeSection, onSectionChange, onLogout, mobile }: SidebarProps) => {
+  // Only one menuItems declaration
   const menuItems = [
     { id: 'home', label: 'Ballina', icon: Home },
     { id: 'trending', label: 'Tendenca', icon: TrendingUp },
     { id: 'members', label: 'Anëtarët', icon: Users },
     { id: 'events', label: 'Ngjarjet', icon: Calendar },
     { id: 'matches', label: 'Ndeshjet', icon: Trophy },
-  ];
-
-  const userMenuItems = [
     { id: 'profile', label: 'Profili Im', icon: User },
     { id: 'settings', label: 'Cilësimet', icon: Settings },
   ];
 
+  // Responsive: show sidebar only on desktop, vertical menu on mobile/hamburger
   return (
-    <aside className="w-64 bg-gradient-surface border-r h-screen flex flex-col">
-      <div className="p-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-hero rounded-full flex items-center justify-center">
-            <span className="text-white font-bold">RM</span>
-          </div>
-          <div>
-            <h2 className="text-lg font-bold bg-gradient-hero bg-clip-text text-transparent">
-              RMA Shqip
-            </h2>
-            <p className="text-xs text-muted-foreground">Madridista Community</p>
-          </div>
-        </div>
-      </div>
-
-      <ScrollArea className="flex-1 px-3">
-        <div className="space-y-2">
+    <aside className={
+      mobile
+        ? "w-full bg-gradient-surface h-screen flex flex-col"
+        : "hidden lg:flex w-64 bg-gradient-surface border-r h-screen flex-col"
+    }>
+      {/* Navigation Menu */}
+      {mobile ? (
+        <div className="flex-1 px-3 pt-6 space-y-2 overflow-y-auto">
           {menuItems.map((item) => (
             <Button
               key={item.id}
               variant={activeSection === item.id ? "secondary" : "ghost"}
-              className="w-full justify-start"
+              className="w-full justify-start text-base"
               onClick={() => onSectionChange(item.id)}
             >
-              <item.icon className="h-4 w-4 mr-3" />
+              <item.icon className="h-5 w-5 mr-3" />
               {item.label}
             </Button>
           ))}
+          {user?.isAdmin && (
+            <Button
+              variant={activeSection === 'admin' ? "secondary" : "ghost"}
+              className="w-full justify-start text-accent text-base"
+              onClick={() => onSectionChange('admin')}
+            >
+              <Shield className="h-5 w-5 mr-3" />
+              Admin Panel
+            </Button>
+          )}
         </div>
-
-        <Separator className="my-4" />
-
-        {user && (
-          <div className="space-y-2">
-            <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Llogaria
-            </p>
-            {userMenuItems.map((item) => (
+      ) : (
+        <ScrollArea className="flex-1 px-3 pt-6">
+          <div className="space-y-1 md:space-y-2">
+            {menuItems.map((item) => (
               <Button
                 key={item.id}
                 variant={activeSection === item.id ? "secondary" : "ghost"}
-                className="w-full justify-start"
+                className="w-full justify-start text-sm md:text-base"
                 onClick={() => onSectionChange(item.id)}
               >
-                <item.icon className="h-4 w-4 mr-3" />
+                <item.icon className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3" />
                 {item.label}
               </Button>
             ))}
-
-            {user.isAdmin && (
+            {user?.isAdmin && (
               <Button
                 variant={activeSection === 'admin' ? "secondary" : "ghost"}
-                className="w-full justify-start text-accent"
+                className="w-full justify-start text-accent text-sm md:text-base"
                 onClick={() => onSectionChange('admin')}
               >
-                <Shield className="h-4 w-4 mr-3" />
+                <Shield className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3" />
                 Admin Panel
               </Button>
             )}
           </div>
-        )}
-      </ScrollArea>
+        </ScrollArea>
+      )}
 
+      {/* User Profile Section */}
       {user && (
-        <div className="p-4 border-t">
-          <div className="flex items-center space-x-3 mb-3">
+        <div className="p-3 md:p-4 border-t">
+          <div className="flex items-center space-x-2 md:space-x-3 mb-3">
             <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-semibold">
                 {user.name.charAt(0)}
@@ -119,7 +114,7 @@ export const Sidebar = ({ user, activeSection, onSectionChange, onLogout }: Side
           <Button 
             variant="ghost" 
             size="sm" 
-            className="w-full justify-start text-destructive hover:text-destructive"
+            className="w-full justify-start text-destructive hover:text-destructive text-sm"
             onClick={onLogout}
           >
             <LogOut className="h-4 w-4 mr-2" />
@@ -129,4 +124,4 @@ export const Sidebar = ({ user, activeSection, onSectionChange, onLogout }: Side
       )}
     </aside>
   );
-};
+}

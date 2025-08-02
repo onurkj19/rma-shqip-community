@@ -49,7 +49,7 @@ export const CreatePost = ({ user, onSubmit }: CreatePostProps) => {
       <CardContent className="p-6">
         <div className="flex space-x-4">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={user?.avatar} />
+                            <AvatarImage src={user?.avatar || localStorage.getItem('user-avatar')} />
             <AvatarFallback className="bg-gradient-primary text-white">
               {user?.name?.charAt(0) || "A"}
             </AvatarFallback>
