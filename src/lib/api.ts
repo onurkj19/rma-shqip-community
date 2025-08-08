@@ -189,6 +189,29 @@ export const userAPI = {
 // Posts API
 export const postsAPI = {
   // Get all posts
+  getPosts: async (userId?: string) => {
+    let query = supabase
+      .from('posts')
+      .select(`
+        *,
+        author:user_profiles(*),
+        post_likes(user_id)
+      `)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false });
+
+    const { data, error } = await query;
+
+    // Add is_liked field
+    const postsWithLikes = data?.map(post => ({
+      ...post,
+      is_liked: userId ? post.post_likes?.some((like: any) => like.user_id === userId) : false
+    }));
+
+    return { data: postsWithLikes, error };
+  },
+
+  // Get all posts (alias for backward compatibility)
   getAllPosts: async (userId?: string) => {
     let query = supabase
       .from('posts')
@@ -513,10 +536,26 @@ export const uploadAPI = {
     return { data, error };
   },
 
+  // Upload avatar
+  uploadAvatar: async (file: File) => {
+    const { data, error } = await supabase.storage
+      .from('avatars')
+      .upload(`${Date.now()}-${file.name}`, file);
+    return { data, error };
+  },
+
   // Get image URL
   getImageUrl: (path: string) => {
     const { data } = supabase.storage
       .from('images')
+      .getPublicUrl(path);
+    return data.publicUrl;
+  },
+
+  // Get avatar URL
+  getAvatarUrl: (path: string) => {
+    const { data } = supabase.storage
+      .from('avatars')
       .getPublicUrl(path);
     return data.publicUrl;
   }

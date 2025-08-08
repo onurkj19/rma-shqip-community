@@ -38,14 +38,13 @@ interface UserProfileProps {
 export const UserProfile = ({ user, onLike, onComment, onShare, onReport, onAuthRequired }: UserProfileProps) => {
   const { user: authUser, userProfile, session } = useAuth();
   
-  console.log("UserProfile component rendered with user:", user);
-  console.log("authUser:", authUser);
-  console.log("session user:", session?.user);
-  console.log("userProfile:", userProfile);
+  // Check authentication status - improved logic
+  const isAuthenticated = !!(authUser || session?.user || userProfile);
+  const currentUserEmail = authUser?.email || session?.user?.email || userProfile?.email;
   
-  // Check authentication status
-  const isAuthenticated = authUser || session?.user || userProfile;
-  console.log("Is user authenticated:", isAuthenticated);
+  // Check if we're viewing own profile - compare with current user data
+  const isViewingOwnProfile = currentUserEmail && user?.email && currentUserEmail === user.email;
+  
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(user?.name || '');
   const [editEmail, setEditEmail] = useState(user?.email || '');
@@ -79,9 +78,19 @@ export const UserProfile = ({ user, onLike, onComment, onShare, onReport, onAuth
         const totalLikes = userPosts.reduce((sum, post) => sum + (post.likes?.length || 0), 0);
         setLikesCount(totalLikes);
         
-        // TODO: Implement real followers/following count from database
-        setFollowersCount(12); // Mock data for now
-        setFollowingCount(8); // Mock data for now
+        // Fetch real followers/following count from database
+        try {
+          const { data: followers } = await userAPI.getFollowers(userId);
+          setFollowersCount(followers?.length || 0);
+          
+          const { data: following } = await userAPI.getFollowing(userId);
+          setFollowingCount(following?.length || 0);
+        } catch (error) {
+          console.error('Error fetching follow data:', error);
+          // Fallback to mock data
+          setFollowersCount(12);
+          setFollowingCount(8);
+        }
       } catch (error) {
         console.error('Error fetching user stats:', error);
       }
@@ -90,160 +99,116 @@ export const UserProfile = ({ user, onLike, onComment, onShare, onReport, onAuth
     fetchUserStats();
   }, [authUser, userProfile, user, session]);
 
+  // Check if user is following the profile owner
+  useEffect(() => {
+    const checkFollowStatus = async () => {
+      const currentUserId = authUser?.id || session?.user?.id;
+      const profileUserId = userProfile?.id;
+      
+      if (!currentUserId || !profileUserId || currentUserId === profileUserId) return;
+      
+      try {
+        // Check if current user is following the profile owner
+        const { data: following } = await userAPI.getFollowing(currentUserId);
+        const isFollowingUser = following?.some(follow => follow.following_id === profileUserId);
+        setIsFollowing(!!isFollowingUser);
+      } catch (error) {
+        console.error('Error checking follow status:', error);
+      }
+    };
+
+    checkFollowStatus();
+  }, [authUser, userProfile, session, user]);
+
   if (!user) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">Profili nuk u gjet</h2>
           <p className="text-muted-foreground">Ju lutem kyçuni për të parë profilin tuaj.</p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Debug: user={JSON.stringify(user)}
-          </p>
+          {!isAuthenticated && (
+            <Button
+              onClick={() => {
+                if (onAuthRequired) {
+                  onAuthRequired();
+                }
+              }}
+              className="mt-4"
+            >
+              Kyçu
+            </Button>
+          )}
         </div>
       </div>
     );
   }
 
-  // Update user data from session if available
-  useEffect(() => {
-    if (session?.user) {
-      if (!user.name || user.name === 'Përdorues') {
-        user.name = session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Përdorues';
-      }
-      if (!user.email || user.email === 'user@example.com') {
-        user.email = session.user.email || user.email;
-      }
-      if (!user.username || user.username === 'user') {
-        user.username = session.user.email?.split('@')[0] || user.username;
-      }
-      if (!user.avatar) {
-        user.avatar = session.user.user_metadata?.avatar_url || user.avatar;
-      }
-    }
-  }, [session, user]);
-
-  // Update user data from userProfile if available
-  useEffect(() => {
-    if (userProfile) {
-      if (!user.name || user.name === 'Përdorues') {
-        user.name = userProfile.full_name || user.name;
-      }
-      if (!user.email || user.email === 'user@example.com') {
-        user.email = userProfile.email || user.email;
-      }
-      if (!user.username || user.username === 'user') {
-        user.username = userProfile.email?.split('@')[0] || user.username;
-      }
-      if (!user.avatar) {
-        user.avatar = userProfile.avatar_url || user.avatar;
-      }
-    }
-  }, [userProfile, user]);
-
-  // Update avatarUrl state with user.avatar
-  useEffect(() => {
-    if (user.avatar) {
-      setAvatarUrl(user.avatar);
-    }
-  }, [user.avatar]);
-
-  // Update editName and editEmail state with user data
-  useEffect(() => {
-    if (user.name) {
-      setEditName(user.name);
-    }
-    if (user.email) {
-      setEditEmail(user.email);
-    }
-  }, [user.name, user.email]);
-
   const handleAvatarUpload = async () => {
-    const userId = authUser?.id || session?.user?.id;
-    console.log('handleAvatarUpload - userId:', userId);
-    console.log('authUser:', authUser);
-    console.log('session:', session);
-    
-    if (!userId) {
-      alert('Ju lutem kyçuni për të ngarkuar një foto profili.');
+    if (!isAuthenticated) {
+      if (onAuthRequired) {
+        onAuthRequired();
+      }
       return;
     }
 
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file && userId) {
-        setIsUploadingAvatar(true);
+    setIsUploadingAvatar(true);
+    try {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+
         try {
-          // Upload to Supabase storage
-          const { data: uploadData, error: uploadError } = await uploadAPI.uploadImage(
-            file,
-            `avatars/${userId}`
-          );
+          const { data: uploadData, error: uploadError } = await uploadAPI.uploadAvatar(file);
+          if (uploadError) throw uploadError;
 
-          if (uploadError) {
-            throw uploadError;
+          if (uploadData?.path) {
+            const newAvatarUrl = uploadAPI.getAvatarUrl(uploadData.path);
+            setAvatarUrl(newAvatarUrl);
+            localStorage.setItem('user-avatar', newAvatarUrl);
+            
+            // Update user profile with new avatar
+            const userId = authUser?.id || session?.user?.id;
+            if (userId) {
+              await userAPI.updateProfile(userId, { avatar_url: newAvatarUrl });
+            }
           }
-
-          // Get the public URL
-          const imageUrl = uploadAPI.getImageUrl(uploadData.path);
-
-          // Update user profile in database
-          const { error: updateError } = await userAPI.updateProfile(userId, {
-            avatar_url: imageUrl
-          });
-
-          if (updateError) {
-            throw updateError;
-          }
-
-          // Update local state
-          setAvatarUrl(imageUrl);
-          localStorage.setItem('user-avatar', imageUrl);
-
-          // Update user object
-          if (user) {
-            user.avatar = imageUrl;
-          }
-
-          setIsUploadingAvatar(false);
-          alert('Fotoja e profilit u ngarkua me sukses!');
         } catch (error) {
           console.error('Error uploading avatar:', error);
+          alert('Gabim gjatë ngarkimit të avatarit');
+        } finally {
           setIsUploadingAvatar(false);
-          alert('Gabim gjatë ngarkimit të fotos. Provoni përsëri.');
         }
-      }
-    };
-    input.click();
+      };
+      input.click();
+    } catch (error) {
+      console.error('Error in avatar upload:', error);
+      setIsUploadingAvatar(false);
+    }
   };
 
   const handleSaveProfile = async () => {
-    const userId = authUser?.id || session?.user?.id;
-    console.log('handleSaveProfile - userId:', userId);
-    if (!userId) {
-      alert('Ju lutem kyçuni për të përditësuar profilin.');
+    if (!isAuthenticated) {
+      if (onAuthRequired) {
+        onAuthRequired();
+      }
       return;
     }
-    
+
     setIsSaving(true);
     try {
-      // Update user profile in database
-      const { error } = await userAPI.updateProfile(userId, {
+      const userId = authUser?.id || session?.user?.id;
+      if (!userId) throw new Error('No user ID found');
+
+      const updateData = {
         full_name: editName,
-        email: editEmail
-      });
+        email: editEmail,
+      };
 
-      if (error) {
-        throw error;
-      }
-
-      // Update local state
-      if (user) {
-        user.name = editName;
-        user.email = editEmail;
-      }
+      const { error } = await userAPI.updateProfile(userId, updateData);
+      if (error) throw error;
 
       setIsEditing(false);
       alert('Profili u përditësua me sukses!');
@@ -256,34 +221,38 @@ export const UserProfile = ({ user, onLike, onComment, onShare, onReport, onAuth
   };
 
   const handleFollowToggle = async () => {
-    const userId = authUser?.id || session?.user?.id;
-    console.log('handleFollowToggle - userId:', userId);
-    console.log('authUser:', authUser);
-    console.log('session:', session);
-    console.log('userProfile:', userProfile);
-    console.log('onAuthRequired callback:', onAuthRequired);
+    // Don't allow following yourself
+    if (isViewingOwnProfile) {
+      return;
+    }
     
-    // Check if user is actually authenticated
-    const isAuthenticated = authUser || session?.user || userProfile;
-    console.log('Is authenticated:', isAuthenticated);
-    
+    // Check if user is authenticated
     if (!isAuthenticated) {
-      // Trigger auth modal instead of showing alert
       if (onAuthRequired) {
-        console.log('Calling onAuthRequired callback');
         onAuthRequired();
-      } else {
-        console.log('User not authenticated, should show auth modal');
       }
       return;
     }
 
     try {
-      // TODO: Implement real follow/unfollow API call
-      setIsFollowing(!isFollowing);
+      const currentUserId = authUser?.id || session?.user?.id;
+      const profileUserId = userProfile?.id;
+      
+      if (!currentUserId || !profileUserId) {
+        throw new Error('Missing user IDs for follow operation');
+      }
+
       if (isFollowing) {
+        // Unfollow user
+        const { error } = await userAPI.unfollowUser(currentUserId, profileUserId);
+        if (error) throw error;
+        setIsFollowing(false);
         setFollowersCount(prev => Math.max(0, prev - 1));
       } else {
+        // Follow user
+        const { error } = await userAPI.followUser(currentUserId, profileUserId);
+        if (error) throw error;
+        setIsFollowing(true);
         setFollowersCount(prev => prev + 1);
       }
     } catch (error) {
@@ -439,8 +408,8 @@ export const UserProfile = ({ user, onLike, onComment, onShare, onReport, onAuth
           </div>
         </div>
 
-        {/* Follow Button - Only show when viewing someone else's profile */}
-        {(authUser?.email !== user?.email && session?.user?.email !== user?.email && userProfile?.email !== user?.email) && (
+        {/* Follow Button - Only show when viewing someone else's profile AND user is authenticated */}
+        {!isViewingOwnProfile && isAuthenticated && (
           <div className="mt-4 pt-4 border-t">
             <Button
               variant={isFollowing ? "outline" : "default"}
@@ -462,51 +431,32 @@ export const UserProfile = ({ user, onLike, onComment, onShare, onReport, onAuth
             </Button>
           </div>
         )}
-        
-                 {/* Test buttons */}
-         <div className="mt-4 pt-4 border-t space-y-2">
-           <Button
-             variant="outline"
-             size="sm"
-             onClick={() => {
-               console.log('=== AUTH STATUS DEBUG ===');
-               console.log('authUser:', authUser);
-               console.log('session:', session);
-               console.log('userProfile:', userProfile);
-               console.log('user:', user);
-               console.log('Is authenticated:', authUser || session?.user || userProfile);
-               console.log('========================');
-             }}
-             className="w-full"
-           >
-             Debug Auth Status
-           </Button>
-           <Button
-             variant="outline"
-             size="sm"
-             onClick={async () => {
-               console.log('Testing Supabase connection...');
-               const result = await testSupabaseConnection();
-               console.log('Supabase test result:', result);
-             }}
-             className="w-full"
-           >
-             Test Supabase Connection
-           </Button>
-           <Button
-             variant="outline"
-             size="sm"
-             onClick={() => {
-               console.log('Test button clicked');
-               if (onAuthRequired) {
-                 onAuthRequired();
-               }
-             }}
-             className="w-full"
-           >
-             Test Auth Modal
-           </Button>
-         </div>
+
+        {/* Authentication Status for Debug */}
+        {!isAuthenticated && (
+          <div className="mt-4 pt-4 border-t">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-2">
+                {isViewingOwnProfile 
+                  ? "Kyçuni për të redaktuar profilin tuaj dhe për të ndjekur përdorues të tjerë"
+                  : "Ju lutem kyçuni për të ndjekur përdoruesit"
+                }
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (onAuthRequired) {
+                    onAuthRequired();
+                  }
+                }}
+                className="w-full"
+              >
+                Kyçu
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Profile Actions */}

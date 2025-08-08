@@ -78,18 +78,45 @@ const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
+  // Create user object for components
+  const currentUser = userProfile ? {
+    name: userProfile.full_name || userProfile.email,
+    email: userProfile.email,
+    avatar: userProfile.avatar_url || "/placeholder.svg",
+    username: userProfile.email.split('@')[0],
+    isAdmin: userProfile.role === 'admin'
+  } : user ? {
+    name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+    email: user.email,
+    avatar: user.user_metadata?.avatar_url || "/placeholder.svg",
+    username: user.email?.split('@')[0] || 'user',
+    isAdmin: userProfile?.role === 'admin' || false
+  } : null;
+
   const handleCreatePost = (content: string, media?: File) => {
     const newPost = {
       id: Date.now().toString(),
-      author: mockUser,
+      author: currentUser || mockUser,
       content,
-      timestamp: "Tani",
+      timestamp: new Date().toISOString(),
       likes: 0,
       comments: 0,
       shares: 0,
       isLiked: false
     };
     setPosts([newPost, ...posts]);
+  };
+
+  const handleEditPost = (postId: string) => {
+    // TODO: Implement post editing
+    console.log("Edit post:", postId);
+    alert('Funksionaliteti për redaktimin e postimeve do të shtohet së shpejti!');
+  };
+
+  const handleDeletePost = (postId: string) => {
+    if (confirm('A jeni të sigurt që dëshironi ta fshini këtë postim?')) {
+      setPosts(posts.filter(post => post.id !== postId));
+    }
   };
 
   const handleLike = (postId: string) => {
@@ -114,6 +141,8 @@ const Index = () => {
 
   const handleReport = (postId: string) => {
     console.log("Report post:", postId);
+    // TODO: Implement automatic ban system for reported posts
+    alert('Postimi u raportua. Do të shqyrtohet nga administratorët.');
   };
 
   const renderContent = () => {
@@ -136,7 +165,7 @@ const Index = () => {
               </div>
             </div>
 
-            <CreatePost user={mockUser} onSubmit={handleCreatePost} />
+            <CreatePost user={currentUser || mockUser} onSubmit={handleCreatePost} />
             
             <div className="space-y-6">
               {posts.map((post) => (
@@ -147,6 +176,8 @@ const Index = () => {
                   onComment={handleComment}
                   onShare={handleShare}
                   onReport={handleReport}
+                  onEdit={handleEditPost}
+                  onDelete={handleDeletePost}
                 />
               ))}
             </div>
@@ -170,16 +201,14 @@ const Index = () => {
       case "profile":
         return (
           <UserProfile
-            user={mockUser}
+            user={currentUser}
             onLike={handleLike}
             onComment={handleComment}
             onShare={handleShare}
             onReport={handleReport}
             onAuthRequired={() => {
               console.log('Auth required, setting modal to open');
-              console.log('Current authModalOpen state:', authModalOpen);
               setAuthModalOpen(true);
-              console.log('Auth modal state set to true');
             }}
           />
         );
@@ -213,12 +242,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-surface">
       <Header 
-        user={userProfile ? {
-          name: userProfile.full_name || userProfile.email,
-          avatar: userProfile.avatar_url || "/placeholder.svg",
-          username: userProfile.email.split('@')[0],
-          isAdmin: userProfile.role === 'admin'
-        } : null} 
+        user={currentUser} 
         onMenuClick={() => setMobileMenuOpen(true)}
         onAuthClick={() => setAuthModalOpen(true)}
       />
@@ -233,11 +257,7 @@ const Index = () => {
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar
-            user={userProfile ? {
-              name: userProfile.full_name || userProfile.email,
-              avatar: userProfile.avatar_url || "/placeholder.svg",
-              isAdmin: userProfile.role === 'admin'
-            } : null}
+            user={currentUser}
             activeSection={activeSection}
             onSectionChange={setActiveSection}
             onLogout={signOut}
