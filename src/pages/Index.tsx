@@ -274,8 +274,8 @@ const Index = () => {
 
       {/* Auth Modal */}
       <AuthModal 
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
+        open={authModalOpen}
+        onOpenChange={setAuthModalOpen}
       />
     </div>
   );
