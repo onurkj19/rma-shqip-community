@@ -18,7 +18,12 @@ export const InstagramHeader = ({ currentUser, onAuthClick, onMenuClick }: Insta
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-900">Instagram</h1>
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">RMA</span>
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">RMA Shqip</h1>
+            </div>
           </div>
 
           {/* Search Bar */}
@@ -27,7 +32,7 @@ export const InstagramHeader = ({ currentUser, onAuthClick, onMenuClick }: Insta
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <input
                 type="text"
-                placeholder="Kërko..."
+                placeholder="Kërko përdorues, postime..."
                 className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

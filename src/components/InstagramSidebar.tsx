@@ -9,7 +9,7 @@ interface Suggestion {
   isFollowing: boolean;
 }
 
-interface InstagramSidebarProps {
+interface RMASidebarProps {
   currentUser?: {
     name: string;
     avatar?: string;
@@ -20,12 +20,12 @@ interface InstagramSidebarProps {
   mobile?: boolean;
 }
 
-export const InstagramSidebar = ({ 
+export const RMASidebar = ({ 
   currentUser, 
   suggestions, 
   onLogout, 
   mobile = false 
-}: InstagramSidebarProps) => {
+}: RMASidebarProps) => {
   return (
     <div className={`${mobile ? 'w-full' : 'w-80'} bg-white border-l border-gray-200 p-4`}>
       {/* User Profile */}
@@ -96,7 +96,7 @@ export const InstagramSidebar = ({
           <span>Vendet</span>
           <span>Gjuha</span>
         </div>
-        <p>© 2024 INSTAGRAM FROM META</p>
+        <p>© 2024 RMA SHQIP COMMUNITY</p>
       </div>
 
       {/* Mobile Menu Actions */}

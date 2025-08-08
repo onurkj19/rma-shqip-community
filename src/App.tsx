@@ -8,16 +8,10 @@ import Index from "./pages/Index";
 import IndexSimple from "./pages/Index-simple";
 import IndexDebug from "./pages/Index-debug";
 import NotFound from "./pages/NotFound";
-import { testSupabaseConnection } from "@/lib/supabase-test";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Test Supabase connection on app start
-  React.useEffect(() => {
-    testSupabaseConnection();
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

@@ -3,7 +3,7 @@ import { InstagramStories } from "./InstagramStories";
 import { InstagramPost } from "./InstagramPost";
 import { CreatePost } from "./CreatePost";
 
-interface InstagramFeedProps {
+interface RMAFeedProps {
   posts: any[];
   stories: any[];
   currentUser?: {
@@ -19,7 +19,7 @@ interface InstagramFeedProps {
   onDelete: (postId: string) => void;
 }
 
-export const InstagramFeed = ({ 
+export const RMAFeed = ({ 
   posts, 
   stories, 
   currentUser, 
@@ -29,7 +29,7 @@ export const InstagramFeed = ({
   onReport, 
   onEdit, 
   onDelete 
-}: InstagramFeedProps) => {
+}: RMAFeedProps) => {
   const [showCreatePost, setShowCreatePost] = useState(false);
 
   return (

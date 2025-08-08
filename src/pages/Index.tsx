@@ -1,23 +1,9 @@
 import { useState } from "react";
-import { Header } from "@/components/Header";
-import { Sidebar } from "@/components/Sidebar";
-import { CreatePost } from "@/components/CreatePost";
-import { PostCard } from "@/components/PostCard";
-import { TrendingPosts } from "@/components/TrendingPosts";
-import { MembersList } from "@/components/MembersList";
-import { EventsList } from "@/components/EventsList";
-import { MatchSchedule } from "@/components/MatchSchedule";
-import { UserProfile } from "@/components/UserProfile";
-import { SettingsPage } from "@/components/SettingsPage";
-import { AuthModal } from "@/components/auth/AuthModal";
-import { AdminPanel } from "@/components/admin/AdminPanel";
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
 import { InstagramHeader } from "@/components/InstagramHeader";
-import { InstagramFeed } from "@/components/InstagramFeed";
-import { InstagramSidebar } from "@/components/InstagramSidebar";
-
-import heroImage from "@/assets/hero-banner.jpg";
+import { RMAFeed } from "@/components/InstagramFeed";
+import { RMASidebar } from "@/components/InstagramSidebar";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { useAuth } from "@/hooks/useAuth";
 
 // Mock data for Instagram-like interface
 const mockStories = [
@@ -90,7 +76,6 @@ const mockSuggestions = [
 
 const Index = () => {
   const { user, userProfile, loading, signOut } = useAuth();
-  const [activeSection, setActiveSection] = useState("home");
   const [posts, setPosts] = useState(mockPosts);
   const [stories, setStories] = useState(mockStories);
   const [suggestions, setSuggestions] = useState(mockSuggestions);
@@ -112,31 +97,6 @@ const Index = () => {
     isAdmin: userProfile?.role === 'admin' || false
   } : null;
 
-  const handleCreatePost = (content: string, media?: File) => {
-    const newPost = {
-      id: Date.now().toString(),
-      author: currentUser || mockUser,
-      content,
-      image: media ? URL.createObjectURL(media) : undefined,
-      timestamp: new Date().toISOString(),
-      likes: 0,
-      comments: 0,
-      shares: 0,
-      isLiked: false,
-      isSaved: false
-    };
-    setPosts([newPost, ...posts]);
-  };
-
-  const handleEditPost = (postId: string) => {
-    // TODO: Implement post editing
-    console.log('Edit post:', postId);
-  };
-
-  const handleDeletePost = (postId: string) => {
-    setPosts(posts.filter(post => post.id !== postId));
-  };
-
   const handleLike = (postId: string) => {
     setPosts(posts.map(post => 
       post.id === postId 
@@ -146,28 +106,57 @@ const Index = () => {
   };
 
   const handleComment = (postId: string) => {
-    // TODO: Implement comment functionality
     console.log('Comment on post:', postId);
   };
 
   const handleShare = (postId: string) => {
-    // TODO: Implement share functionality
     console.log('Share post:', postId);
   };
 
   const handleReport = (postId: string) => {
     alert('Postimi u raportua!');
-    // TODO: Implement automatic ban system for reported posts
   };
 
-  const renderContent = () => {
-    switch (activeSection) {
-      case "home":
-        return (
-          <div className="flex flex-col lg:flex-row">
+  const handleEditPost = (postId: string) => {
+    console.log('Edit post:', postId);
+  };
+
+  const handleDeletePost = (postId: string) => {
+    setPosts(posts.filter(post => post.id !== postId));
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <InstagramHeader 
+        currentUser={currentUser}
+        onAuthClick={() => setAuthModalOpen(true)}
+        onMenuClick={() => setMobileMenuOpen(true)}
+      />
+      
+      {/* Mobile Layout */}
+      <div className="block lg:hidden pt-16">
+        <div className="max-w-2xl mx-auto px-4">
+          <RMAFeed 
+            posts={posts}
+            stories={stories}
+            currentUser={currentUser}
+            onLike={handleLike}
+            onComment={handleComment}
+            onShare={handleShare}
+            onReport={handleReport}
+            onEdit={handleEditPost}
+            onDelete={handleDeletePost}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:block pt-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex">
             {/* Main Feed */}
             <div className="flex-1 max-w-2xl mx-auto">
-              <InstagramFeed 
+              <RMAFeed 
                 posts={posts}
                 stories={stories}
                 currentUser={currentUser}
@@ -182,75 +171,13 @@ const Index = () => {
             
             {/* Sidebar */}
             <div className="hidden lg:block lg:w-80 lg:ml-8">
-              <InstagramSidebar 
+              <RMASidebar 
                 currentUser={currentUser}
                 suggestions={suggestions}
                 onLogout={signOut}
               />
             </div>
           </div>
-        );
-      
-      case "profile":
-        return (
-          <UserProfile 
-            user={currentUser}
-            onAuthRequired={() => setAuthModalOpen(true)}
-          />
-        );
-      
-      case "settings":
-        return <SettingsPage />;
-      
-      case "admin":
-        return currentUser?.isAdmin ? <AdminPanel /> : <div>Access denied</div>;
-      
-      default:
-        return (
-          <div className="flex flex-col lg:flex-row">
-            <div className="flex-1 max-w-2xl mx-auto">
-              <InstagramFeed 
-                posts={posts}
-                stories={stories}
-                currentUser={currentUser}
-                onLike={handleLike}
-                onComment={handleComment}
-                onShare={handleShare}
-                onReport={handleReport}
-                onEdit={handleEditPost}
-                onDelete={handleDeletePost}
-              />
-            </div>
-            
-            <div className="hidden lg:block lg:w-80 lg:ml-8">
-              <InstagramSidebar 
-                currentUser={currentUser}
-                suggestions={suggestions}
-                onLogout={signOut}
-              />
-            </div>
-          </div>
-        );
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <InstagramHeader 
-        currentUser={currentUser}
-        onAuthClick={() => setAuthModalOpen(true)}
-        onMenuClick={() => setMobileMenuOpen(true)}
-      />
-      
-      {/* Mobile Layout */}
-      <div className="block lg:hidden">
-        {renderContent()}
-      </div>
-
-      {/* Desktop Layout */}
-      <div className="hidden lg:block pt-16">
-        <div className="max-w-6xl mx-auto px-4">
-          {renderContent()}
         </div>
       </div>
 
@@ -262,7 +189,7 @@ const Index = () => {
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="fixed left-0 top-0 h-full w-72 bg-white shadow-lg">
-            <InstagramSidebar 
+            <RMASidebar 
               currentUser={currentUser}
               suggestions={suggestions}
               onLogout={signOut}
