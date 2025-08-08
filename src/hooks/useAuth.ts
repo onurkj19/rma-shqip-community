@@ -358,31 +358,36 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
-    console.log('SignOut called'); // Added for debugging
+    console.log('SignOut called');
     if (!supabase) {
       console.error('Supabase not configured for signOut');
       return;
     }
     
     try {
-      console.log('Calling authAPI.signOut...'); // Added for debugging
+      console.log('Calling authAPI.signOut...');
       const { error } = await authAPI.signOut();
-      console.log('SignOut result:', { error }); // Added for debugging
+      console.log('SignOut result:', { error });
       
       if (error) throw error;
+      
+      // Clear all local state
+      setUser(null);
+      setUserProfile(null);
+      setSession(null);
       
       // Clear avatar from localStorage
       localStorage.removeItem('user-avatar');
       
-      console.log('SignOut successful, showing toast...'); // Added for debugging
+      console.log('SignOut successful, showing toast...');
       toast({
         title: "Dilni",
         description: "Jeni shkëputur me sukses"
       });
       
-      console.log('SignOut process complete'); // Added for debugging
+      console.log('SignOut process complete');
     } catch (error: any) {
-      console.error('SignOut error:', error); // Added for debugging
+      console.error('SignOut error:', error);
       toast({
         variant: "destructive",
         title: "Gabim",
