@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { InstagramHeader } from "@/components/InstagramHeader";
 import { RMAFeed } from "@/components/InstagramFeed";
 import { RMASidebar } from "@/components/InstagramSidebar";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/hooks/useAuth";
 import { Sidebar } from "@/components/Sidebar";
 import { CreatePost } from "@/components/CreatePost";
+import { Bell, Search, User, Settings, LogOut, Crown, Trophy, Users, Calendar, Home, TrendingUp } from "lucide-react";
 
 // Mock data for Instagram-like interface
 const mockStories = [
@@ -149,25 +149,39 @@ const Index = () => {
       case "home":
         return (
           <div className="space-y-6">
-            {/* Hero Banner */}
-            <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">👑</span>
+            {/* Professional Hero Banner */}
+            <div className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 rounded-2xl p-8 text-white overflow-hidden">
+              <div className="absolute inset-0 bg-black/20"></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-6">
+                    <div className="relative">
+                      <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-2xl">
+                        <Crown className="w-10 h-10 text-white" />
+                      </div>
+                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">R</span>
+                      </div>
+                    </div>
+                    <div>
+                      <h1 className="text-4xl font-bold mb-2">RMA Shqip</h1>
+                      <p className="text-xl opacity-90 mb-1">Komuniteti shqiptar i Real Madrid</p>
+                      <p className="text-sm opacity-75 font-medium">• Hala Madrid y Nada Más •</p>
+                    </div>
                   </div>
-                  <div>
-                    <h1 className="text-3xl font-bold">RMA Shqip</h1>
-                    <p className="text-lg opacity-90">Komuniteti shqiptar i Real Madrid</p>
-                    <p className="text-sm opacity-75">• Hala Madrid! •</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xl">🦅</span>
-                  </div>
-                  <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs">⭐</span>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg">
+                        <Trophy className="w-8 h-8 text-white" />
+                      </div>
+                      <p className="text-xs mt-2 opacity-90">14 UCL</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center shadow-lg">
+                        <span className="text-white text-lg font-bold">⚽</span>
+                      </div>
+                      <p className="text-xs mt-1 opacity-90">La Liga</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -175,7 +189,7 @@ const Index = () => {
 
             {/* Create Post */}
             {currentUser && (
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
                 <CreatePost 
                   user={currentUser} 
                   onSubmit={handleCreatePost}
@@ -200,36 +214,36 @@ const Index = () => {
       
       case "profile":
         return (
-          <div className="bg-white rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">Profili Im</h2>
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+            <h2 className="text-3xl font-bold mb-6 text-gray-900">Profili Im</h2>
             {/* Profile content */}
           </div>
         );
       
       case "settings":
         return (
-          <div className="bg-white rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">Cilësimet</h2>
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+            <h2 className="text-3xl font-bold mb-6 text-gray-900">Cilësimet</h2>
             {/* Settings content */}
           </div>
         );
       
       case "admin":
         return currentUser?.isAdmin ? (
-          <div className="bg-white rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">Admin Panel</h2>
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+            <h2 className="text-3xl font-bold mb-6 text-gray-900">Admin Panel</h2>
             {/* Admin content */}
           </div>
         ) : (
-          <div className="bg-white rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+            <h2 className="text-3xl font-bold mb-6 text-gray-900">Access Denied</h2>
           </div>
         );
       
       default:
         return (
-          <div className="bg-white rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">Seksion i panjohur</h2>
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+            <h2 className="text-3xl font-bold mb-6 text-gray-900">Seksion i panjohur</h2>
           </div>
         );
     }
@@ -237,47 +251,57 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4">
+      {/* Professional Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             {/* Left - Logo */}
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
-                <span className="text-lg">👑</span>
+              <div className="relative">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Crown className="w-6 h-6 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">R</span>
+                </div>
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-900">RMA Shqip</h1>
-                <p className="text-sm text-gray-500">Madridista Community</p>
+                <p className="text-sm text-gray-500 font-medium">Madridista Community</p>
               </div>
             </div>
 
             {/* Center - Search */}
             <div className="flex-1 max-w-2xl mx-8">
               <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
                   placeholder="Kërko postime, përdorues, ngjarje..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg border-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl border-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
                 />
-                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
               </div>
             </div>
 
-            {/* Right - User */}
+            {/* Right - User Actions */}
             <div className="flex items-center space-x-4">
-              <button className="p-2 hover:bg-gray-100 rounded-full">
-                <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5z" />
-                </svg>
+              <button className="p-3 hover:bg-gray-100 rounded-xl transition-colors">
+                <Bell className="h-6 w-6 text-gray-600" />
               </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full">
-                <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5z" />
-                </svg>
+              <button className="p-3 hover:bg-gray-100 rounded-xl transition-colors">
+                <User className="h-6 w-6 text-gray-600" />
               </button>
+              <button className="p-3 hover:bg-gray-100 rounded-xl transition-colors">
+                <Settings className="h-6 w-6 text-gray-600" />
+              </button>
+              {currentUser && (
+                <button 
+                  onClick={signOut}
+                  className="p-3 hover:bg-red-50 rounded-xl transition-colors"
+                >
+                  <LogOut className="h-6 w-6 text-red-600" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -286,7 +310,7 @@ const Index = () => {
       {/* Main Layout */}
       <div className="flex">
         {/* Left Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
+        <div className="w-64 bg-white border-r border-gray-200 min-h-screen shadow-sm">
           <Sidebar
             user={currentUser}
             activeSection={activeSection}
@@ -296,14 +320,14 @@ const Index = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-8">
           <div className="max-w-4xl mx-auto">
             {renderContent()}
           </div>
         </div>
 
         {/* Right Sidebar - Instagram Style */}
-        <div className="hidden xl:block w-80 bg-white border-l border-gray-200 p-4">
+        <div className="hidden xl:block w-80 bg-white border-l border-gray-200 p-6 shadow-sm">
           <RMASidebar 
             currentUser={currentUser}
             suggestions={suggestions}
